@@ -122,11 +122,12 @@ class MatcherAgent:
         Returns:
             Score from 0-100
         """
+        min_years = min_years or 0
         if min_years <= 0:
             return 100.0
         
-        # Calculate total months of experience
-        total_months = sum(exp.duration_months for exp in experience)
+        # Calculate total months of experience (handle None values)
+        total_months = sum((exp.duration_months or 0) for exp in experience)
         total_years = total_months / 12
         
         # Score based on how well experience meets requirement
@@ -237,10 +238,11 @@ class MatcherAgent:
         if matched_skills:
             strengths.append(f"Has {len(matched_skills)} of {len(requirements.required_skills)} required skills")
         
-        # Check for experience
-        total_months = sum(exp.duration_months for exp in resume.experience)
+        # Check for experience (handle None values)
+        total_months = sum((exp.duration_months or 0) for exp in resume.experience)
         total_years = total_months / 12
-        if total_years >= requirements.min_experience_years:
+        min_exp_years = requirements.min_experience_years or 0
+        if min_exp_years > 0 and total_years >= min_exp_years:
             strengths.append(f"Exceeds experience requirement ({total_years:.1f} years)")
         
         # Check for preferred skills
